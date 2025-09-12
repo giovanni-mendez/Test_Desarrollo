@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>VR Sistema Solar + Piano</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <style>body{margin:0;}</style>
+</head>
+<body>
+<a-scene background="color: black">
+
+  <!-- Campo estrellado procedural -->
+  <a-entity id="stars" star-field="count: 1500; radius: 500"></a-entity>
+
+  <!-- Cámara -->
+  <a-entity 
+    id="camera" 
+    camera 
+    wasd-controls 
+    look-controls="reverseMouseDrag: true" 
+    position="0 3 0">
+  </a-entity>
+
+  <!-- Plataforma más grande -->
+  <a-cylinder position="0 0 0" radius="20" height="0.5" color="#444"></a-cylinder>
+
+  <!-- Barrera invisible alrededor de la plataforma -->
+  <a-cylinder position="0 2 0" radius="20" height="4" color="#000" opacity="0" visible="true"></a-cylinder>
+
+  <!-- Luces -->
+  <a-light type="ambient" color="#fff" intensity="0.5"></a-light>
+  <a-light type="point" color="#fff" intensity="2" position="0 80 0"></a-light>
+
+  <!-- Grupo de planetas arriba -->
+  <a-entity id="orbit-center" position="0 200 0">
+
+    <!-- Sol -->
+    <a-sphere radius="20" src="Texturas/sol.jpg"></a-sphere>
+
+    <!-- Planetas -->
+    <a-sphere id="mercury" radius="4" position="40 0 0" src="Texturas/mercurio.jpg"></a-sphere>
+    <a-sphere id="venus" radius="7" position="70 0 0" src="Texturas/venus.jpg"></a-sphere>
+    <a-sphere id="earth" radius="9" position="110 0 0" src="Texturas/tierra.jpg"></a-sphere>
+    <a-sphere id="moon" radius="2.5" position="120 0 0" src="Texturas/luna.jpg"></a-sphere>
+    <a-sphere id="mars" radius="6" position="150 0 0" src="Texturas/marte.jpg"></a-sphere>
+    <a-sphere id="jupiter" radius="20" position="220 0 0" src="Texturas/jupiter.jpg"></a-sphere>
+    <a-entity id="saturn-group" position="300 0 0">
+      <a-sphere radius="18" src="Texturas/saturno.jpg"></a-sphere>
+      <a-ring radius-inner="20" radius-outer="28" rotation="-90 0 0" color="#DDCCAA"></a-ring>
+    </a-entity>
+    <a-sphere id="uranus" radius="14" position="380 0 0" src="Texturas/urano.jpg"></a-sphere>
+    <a-sphere id="neptune" radius="14" position="460 0 0" src="Texturas/neptuno.jpg"></a-sphere>
+  </a-entity>
+
+  <!-- Piano frente a la cámara -->
+  <a-entity id="piano" position="0 1.2 -4">
+    <a-box width="3" height="0.3" depth="1" color="#222" position="1.5 0 0.5"></a-box>
+    <!-- Teclas blancas -->
+    <a-box id="C" width="0.35" height="0.1" depth="0.8" color="#fff" position="0 0.15 0.1"></a-box>
+    <a-box id="D" width="0.35" height="0.1" depth="0.8" color="#fff" position="0.4 0.15 0.1"></a-box>
+    <a-box id="E" width="0.35" height="0.1" depth="0.8" color="#fff" position="0.8 0.15 0.1"></a-box>
+    <a-box id="F" width="0.35" height="0.1" depth="0.8" color="#fff" position="1.2 0.15 0.1"></a-box>
+    <a-box id="G" width="0.35" height="0.1" depth="0.8" color="#fff" position="1.6 0.15 0.1"></a-box>
+    <a-box id="A" width="0.35" height="0.1" depth="0.8" color="#fff" position="2.0 0.15 0.1"></a-box>
+    <a-box id="B" width="0.35" height="0.1" depth="0.8" color="#fff" position="2.4 0.15 0.1"></a-box>
+    <a-box id="C2" width="0.35" height="0.1" depth="0.8" color="#fff" position="2.8 0.15 0.1"></a-box>
+    <!-- Teclas negras -->
+    <a-box id="C#" width="0.2" height="0.12" depth="0.5" color="#000" position="0.2 0.2 0.05"></a-box>
+    <a-box id="D#" width="0.2" height="0.12" depth="0.5" color="#000" position="0.6 0.2 0.05"></a-box>
+    <a-box id="F#" width="0.2" height="0.12" depth="0.5" color="#000" position="1.4 0.2 0.05"></a-box>
+    <a-box id="G#" width="0.2" height="0.12" depth="0.5" color="#000" position="1.8 0.2 0.05"></a-box>
+    <a-box id="A#" width="0.2" height="0.12" depth="0.5" color="#000" position="2.2 0.2 0.05"></a-box>
+  </a-entity>
+
+</a-scene>
+
+<script>
+  // ===== Campo estrellado procedural =====
+  AFRAME.registerComponent('star-field', {
+    schema: {
+      count: {type: 'int', default: 1000},
+      radius: {type: 'number', default: 300}
+    },
+    init: function () {
+      for (let i = 0; i < this.data.count; i++) {
+        const theta = Math.random() * 2 * Math.PI;
+        const phi = Math.acos(2 * Math.random() - 1);
+        const r = this.data.radius;
+
+        const x = r * Math.sin(phi) * Math.cos(theta);
+        const y = r * Math.sin(phi) * Math.sin(theta);
+        const z = r * Math.cos(phi);
+
+        const star = document.createElement('a-sphere');
+        star.setAttribute('position', {x, y, z});
+        star.setAttribute('radius', 0.5);
+        star.setAttribute('color', 'white');
+        star.setAttribute('material', {shader: 'flat'});
+        this.el.appendChild(star);
+      }
+    }
+  });
+
+  // ===== Planetas orbitando =====
+  const planets = [
+    {el:'#mercury', radius:40, speed:0.08},
+    {el:'#venus', radius:70, speed:0.06},
+    {el:'#earth', radius:110, speed:0.05},
+    {el:'#mars', radius:150, speed:0.04},
+    {el:'#jupiter', radius:220, speed:0.03},
+    {el:'#saturn-group', radius:300, speed:0.025},
+    {el:'#uranus', radius:380, speed:0.02},
+    {el:'#neptune', radius:460, speed:0.015}
+  ];
+
+  const moon = document.querySelector('#moon');
+  const earth = document.querySelector('#earth');
+
+  let angle = 0;
+  function animatePlanets() {
+    angle += 0.05;
+    planets.forEach(p=>{
+      const el = document.querySelector(p.el);
+      el.setAttribute('position',{
+        x: p.radius * Math.cos(angle * p.speed),
+        y:0,
+        z: p.radius * Math.sin(angle * p.speed)
+      });
+      el.object3D.rotation.y += 0.01;
+    });
+    // Luna orbitando la Tierra
+    const earthPos = earth.getAttribute('position');
+    moon.setAttribute('position',{
+      x: earthPos.x + 15*Math.cos(angle*0.2),
+      y:0,
+      z: earthPos.z + 15*Math.sin(angle*0.2)
+    });
+    requestAnimationFrame(animatePlanets);
+  }
+  animatePlanets();
+</script>
+</body>
+</html>
