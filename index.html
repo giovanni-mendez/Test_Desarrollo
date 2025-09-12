@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>VR Sistema Solar + Piano</title>
+  <title>VR Sistema Solar + Piano Realista</title>
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <style>body{margin:0;}</style>
 </head>
@@ -12,32 +12,27 @@
   <!-- Campo estrellado procedural -->
   <a-entity id="stars" star-field="count: 1500; radius: 500"></a-entity>
 
-  <!-- Cámara -->
+  <!-- Cámara con cursor -->
   <a-entity 
     id="camera" 
     camera 
     wasd-controls 
     look-controls="reverseMouseDrag: true" 
     position="0 3 0">
+    <a-entity cursor="fuse: false; rayOrigin: mouse" raycaster="objects: .key, .black-key"></a-entity>
   </a-entity>
 
-  <!-- Plataforma más grande -->
+  <!-- Plataforma -->
   <a-cylinder position="0 0 0" radius="20" height="0.5" color="#444"></a-cylinder>
-
-  <!-- Barrera invisible alrededor de la plataforma -->
-  <a-cylinder position="0 2 0" radius="20" height="4" color="#000" opacity="0" visible="true"></a-cylinder>
+  <a-cylinder position="0 2 0" radius="20" height="4" color="#000" opacity="0"></a-cylinder>
 
   <!-- Luces -->
   <a-light type="ambient" color="#fff" intensity="0.5"></a-light>
   <a-light type="point" color="#fff" intensity="2" position="0 80 0"></a-light>
 
-  <!-- Grupo de planetas arriba -->
+  <!-- Sistema Solar -->
   <a-entity id="orbit-center" position="0 200 0">
-
-    <!-- Sol -->
     <a-sphere radius="20" src="Texturas/sol.jpg"></a-sphere>
-
-    <!-- Planetas -->
     <a-sphere id="mercury" radius="4" position="40 0 0" src="Texturas/mercurio.jpg"></a-sphere>
     <a-sphere id="venus" radius="7" position="70 0 0" src="Texturas/venus.jpg"></a-sphere>
     <a-sphere id="earth" radius="9" position="110 0 0" src="Texturas/tierra.jpg"></a-sphere>
@@ -52,24 +47,35 @@
     <a-sphere id="neptune" radius="14" position="460 0 0" src="Texturas/neptuno.jpg"></a-sphere>
   </a-entity>
 
-  <!-- Piano frente a la cámara -->
-  <a-entity id="piano" position="0 1.2 -4">
-    <a-box width="3" height="0.3" depth="1" color="#222" position="1.5 0 0.5"></a-box>
+  <!-- Piano eléctrico frente a la cámara con patas -->
+  <a-entity id="piano" position="1.5 1.0 -2.5" rotation="0 180 0">
+
+    <!-- Cuerpo del piano -->
+    <a-box width="3.5" height="0.4" depth="1.2" color="#222" position="1.4 0.4 0"></a-box>
+
+    <!-- Patas del piano -->
+    <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="0.2 0 0"></a-box>
+    <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="2.6 0 0.1"></a-box>
+    <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="0.2 0 1.1"></a-box>
+    <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="2.6 0 1.1"></a-box>
+
     <!-- Teclas blancas -->
-    <a-box id="C" width="0.35" height="0.1" depth="0.8" color="#fff" position="0 0.15 0.1"></a-box>
-    <a-box id="D" width="0.35" height="0.1" depth="0.8" color="#fff" position="0.4 0.15 0.1"></a-box>
-    <a-box id="E" width="0.35" height="0.1" depth="0.8" color="#fff" position="0.8 0.15 0.1"></a-box>
-    <a-box id="F" width="0.35" height="0.1" depth="0.8" color="#fff" position="1.2 0.15 0.1"></a-box>
-    <a-box id="G" width="0.35" height="0.1" depth="0.8" color="#fff" position="1.6 0.15 0.1"></a-box>
-    <a-box id="A" width="0.35" height="0.1" depth="0.8" color="#fff" position="2.0 0.15 0.1"></a-box>
-    <a-box id="B" width="0.35" height="0.1" depth="0.8" color="#fff" position="2.4 0.15 0.1"></a-box>
-    <a-box id="C2" width="0.35" height="0.1" depth="0.8" color="#fff" position="2.8 0.15 0.1"></a-box>
+    <a-box id="C" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0 0.60 0"></a-box>
+    <a-box id="D" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.4 0.60 0"></a-box>
+    <a-box id="E" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.8 0.60 0"></a-box>
+    <a-box id="F" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="1.2 0.60 0"></a-box>
+    <a-box id="G" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="1.6 0.60 0"></a-box>
+    <a-box id="A" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2 0.60 0"></a-box>
+    <a-box id="B" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.4 0.60 0"></a-box>
+    <a-box id="C2" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.8 0.60 0"></a-box>
+
     <!-- Teclas negras -->
-    <a-box id="C#" width="0.2" height="0.12" depth="0.5" color="#000" position="0.2 0.2 0.05"></a-box>
-    <a-box id="D#" width="0.2" height="0.12" depth="0.5" color="#000" position="0.6 0.2 0.05"></a-box>
-    <a-box id="F#" width="0.2" height="0.12" depth="0.5" color="#000" position="1.4 0.2 0.05"></a-box>
-    <a-box id="G#" width="0.2" height="0.12" depth="0.5" color="#000" position="1.8 0.2 0.05"></a-box>
-    <a-box id="A#" width="0.2" height="0.12" depth="0.5" color="#000" position="2.2 0.2 0.05"></a-box>
+    <a-box id="C#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="0.2 0.65 0.2"></a-box>
+    <a-box id="D#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="0.6 0.65 0.2"></a-box>
+    <a-box id="F#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="1.4 0.65 0.2"></a-box>
+    <a-box id="G#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="1.8 0.65 0.2"></a-box>
+    <a-box id="A#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="2.2 0.65 0.2"></a-box>
+
   </a-entity>
 
 </a-scene>
@@ -77,32 +83,27 @@
 <script>
   // ===== Campo estrellado procedural =====
   AFRAME.registerComponent('star-field', {
-    schema: {
-      count: {type: 'int', default: 1000},
-      radius: {type: 'number', default: 300}
-    },
+    schema: { count: {type:'int', default:1000}, radius:{type:'number', default:300} },
     init: function () {
-      for (let i = 0; i < this.data.count; i++) {
-        const theta = Math.random() * 2 * Math.PI;
-        const phi = Math.acos(2 * Math.random() - 1);
-        const r = this.data.radius;
-
-        const x = r * Math.sin(phi) * Math.cos(theta);
-        const y = r * Math.sin(phi) * Math.sin(theta);
-        const z = r * Math.cos(phi);
-
-        const star = document.createElement('a-sphere');
-        star.setAttribute('position', {x, y, z});
-        star.setAttribute('radius', 0.5);
-        star.setAttribute('color', 'white');
-        star.setAttribute('material', {shader: 'flat'});
+      for (let i=0;i<this.data.count;i++){
+        const theta=Math.random()*2*Math.PI;
+        const phi=Math.acos(2*Math.random()-1);
+        const r=this.data.radius;
+        const x=r*Math.sin(phi)*Math.cos(theta);
+        const y=r*Math.sin(phi)*Math.sin(theta);
+        const z=r*Math.cos(phi);
+        const star=document.createElement('a-sphere');
+        star.setAttribute('position',{x,y,z});
+        star.setAttribute('radius',0.5);
+        star.setAttribute('color','white');
+        star.setAttribute('material',{shader:'flat'});
         this.el.appendChild(star);
       }
     }
   });
 
-  // ===== Planetas orbitando =====
-  const planets = [
+  // ===== Planetas orbitando infinitamente =====
+  const planets=[
     {el:'#mercury', radius:40, speed:0.08},
     {el:'#venus', radius:70, speed:0.06},
     {el:'#earth', radius:110, speed:0.05},
@@ -112,32 +113,49 @@
     {el:'#uranus', radius:380, speed:0.02},
     {el:'#neptune', radius:460, speed:0.015}
   ];
+  const moon=document.querySelector('#moon');
+  const earth=document.querySelector('#earth');
 
-  const moon = document.querySelector('#moon');
-  const earth = document.querySelector('#earth');
-
-  let angle = 0;
-  function animatePlanets() {
-    angle += 0.05;
+  function animatePlanets(time){
+    const t=time*0.001;
     planets.forEach(p=>{
-      const el = document.querySelector(p.el);
-      el.setAttribute('position',{
-        x: p.radius * Math.cos(angle * p.speed),
-        y:0,
-        z: p.radius * Math.sin(angle * p.speed)
-      });
-      el.object3D.rotation.y += 0.01;
+      const angle=t*p.speed;
+      const el=document.querySelector(p.el);
+      el.setAttribute('position',{x:p.radius*Math.cos(angle),y:0,z:p.radius*Math.sin(angle)});
+      el.object3D.rotation.y+=0.01;
     });
-    // Luna orbitando la Tierra
-    const earthPos = earth.getAttribute('position');
-    moon.setAttribute('position',{
-      x: earthPos.x + 15*Math.cos(angle*0.2),
-      y:0,
-      z: earthPos.z + 15*Math.sin(angle*0.2)
-    });
+    const earthPos=earth.getAttribute('position');
+    const moonAngle=t*0.2;
+    moon.setAttribute('position',{x:earthPos.x+15*Math.cos(moonAngle),y:0,z:earthPos.z+15*Math.sin(moonAngle)});
     requestAnimationFrame(animatePlanets);
   }
-  animatePlanets();
+  requestAnimationFrame(animatePlanets);
+
+  // ===== Sonidos del piano con feedback visual =====
+  const notes={
+    'C':'sounds/C.mp3','C#':'sounds/Cs.mp3','D':'sounds/D.mp3','D#':'sounds/Ds.mp3',
+    'E':'sounds/E.mp3','F':'sounds/F.mp3','F#':'sounds/Fs.mp3','G':'sounds/G.mp3',
+    'G#':'sounds/Gs.mp3','A':'sounds/A.mp3','A#':'sounds/As.mp3','B':'sounds/B.mp3','C2':'sounds/C2.mp3'
+  };
+  const audioElements={};
+  for(const note in notes){
+    const audio=new Audio(notes[note]);
+    audio.load(); // importante para asegurar carga
+    audioElements[note]=audio;
+  }
+
+  document.querySelectorAll('.key, .black-key').forEach(key=>{
+    key.addEventListener('click',()=>{
+      const noteId = key.getAttribute('id');
+      if(audioElements[noteId]){
+        audioElements[noteId].currentTime = 0;
+        audioElements[noteId].play().catch(e=>console.log(e)); // manejar errores de autoplay
+        const originalColor = key.getAttribute('color');
+        key.setAttribute('color', '#f00'); // rojo al tocar
+        setTimeout(()=>{ key.setAttribute('color', originalColor); }, 150);
+      }
+    });
+  });
 </script>
 </body>
 </html>
