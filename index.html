@@ -51,30 +51,30 @@
   <a-entity id="piano" position="1.5 1.0 -2.5" rotation="0 180 0">
 
     <!-- Cuerpo -->
-    <a-box width="3.5" height="0.4" depth="1.2" color="#222" position="1.4 0.4 0"></a-box>
+    <a-box width="3.5" height="0.4" depth="1.2" color="#222" position="1.4 0.8 0"></a-box>
 
     <!-- Patas -->
-    <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="0.2 0 0"></a-box>
-    <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="2.6 0 0.1"></a-box>
-    <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="0.2 0 1.1"></a-box>
-    <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="2.6 0 1.1"></a-box>
+    <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="0.2 0.4 -0.5"></a-box>
+    <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="2.6 0.4 -0.5"></a-box>
+    <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="0.2 0.4 0.5"></a-box>
+    <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="2.6 0.4 0.5"></a-box>
 
     <!-- Teclas blancas -->
-    <a-box id="C" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0 0.60 0"></a-box>
-    <a-box id="D" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.4 0.60 0"></a-box>
-    <a-box id="E" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.8 0.60 0"></a-box>
-    <a-box id="F" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="1.2 0.60 0"></a-box>
-    <a-box id="G" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="1.6 0.60 0"></a-box>
-    <a-box id="A" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2 0.60 0"></a-box>
-    <a-box id="B" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.4 0.60 0"></a-box>
-    <a-box id="C2" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.8 0.60 0"></a-box>
+    <a-box id="C" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0 1.0 0"></a-box>
+    <a-box id="D" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.4 1.0 0"></a-box>
+    <a-box id="E" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.8 1.0 0"></a-box>
+    <a-box id="F" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="1.2 1.0 0"></a-box>
+    <a-box id="G" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="1.6 1.0 0"></a-box>
+    <a-box id="A" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.0 1.0 0"></a-box>
+    <a-box id="B" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.4 1.0 0"></a-box>
+    <a-box id="C2" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.8 1.0 0"></a-box>
 
     <!-- Teclas negras -->
-    <a-box id="C#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="0.2 0.65 0.2"></a-box>
-    <a-box id="D#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="0.6 0.65 0.2"></a-box>
-    <a-box id="F#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="1.4 0.65 0.2"></a-box>
-    <a-box id="G#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="1.8 0.65 0.2"></a-box>
-    <a-box id="A#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="2.2 0.65 0.2"></a-box>
+    <a-box id="C#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="0.2 1.05 0.2"></a-box>
+    <a-box id="D#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="0.6 1.05 0.2"></a-box>
+    <a-box id="F#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="1.4 1.05 0.2"></a-box>
+    <a-box id="G#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="1.8 1.05 0.2"></a-box>
+    <a-box id="A#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="2.2 1.05 0.2"></a-box>
 
   </a-entity>
 
@@ -140,25 +140,89 @@
   }
   requestAnimationFrame(animatePlanets);
 
-  // ===== Piano con clones de audio =====
-  const notes={
-    'C':'Sonidos/Do.mp3','C#':'sounds/Cs.mp3','D':'sounds/D.mp3','D#':'sounds/Ds.mp3',
-    'E':'sounds/E.mp3','F':'sounds/F.mp3','F#':'sounds/Fs.mp3','G':'sounds/G.mp3',
-    'G#':'sounds/Gs.mp3','A':'sounds/A.mp3','A#':'sounds/As.mp3','B':'sounds/B.mp3','C2':'sounds/C2.mp3'
+  // ===== Piano optimizado (precarga + clonación de audio) =====
+  const notes = {
+    'C':'Sonidos/Do.mp3','C#':'Sonidos/Cs.mp3','D':'Sonidos/Re.mp3','D#':'Sonidos/Ds.mp3',
+    'E':'Sonidos/Mi.mp3','F':'Sonidos/Fa.mp3','F#':'Sonidos/Fs.mp3','G':'Sonidos/Sol.mp3',
+    'G#':'Sonidos/Gs.mp3','A':'Sonidos/La.mp3','A#':'Sonidos/As.mp3','B':'Sonidos/Si.mp3','C2':'Sonidos/C2.mp3'
   };
 
-  document.querySelectorAll('.key, .black-key').forEach(key=>{
-    key.addEventListener('click',()=>{
-      const noteId = key.getAttribute('id');
-      if(notes[noteId]){
-        const audio=new Audio(notes[noteId]); // 🎵 cada click crea un nuevo audio
-        audio.play().catch(e=>console.log(e));
-        const originalColor = key.getAttribute('color');
-        key.setAttribute('color', '#f00');
-        setTimeout(()=>{ key.setAttribute('color', originalColor); }, 150);
+  const audioCache = {};
+  for (let key in notes) {
+    const audio = new Audio(notes[key]);
+    audio.preload = "auto";
+    audioCache[key] = audio;
+  }
+
+  function playNote(noteId, keyEl) {
+    if (audioCache[noteId]) {
+      const clone = audioCache[noteId].cloneNode();
+      clone.play().catch(e => console.log(e));
+      if (keyEl) {
+        const originalColor = keyEl.getAttribute('color');
+        keyEl.setAttribute('color', '#f00');
+        setTimeout(() => keyEl.setAttribute('color', originalColor), 150);
       }
+    }
+  }
+
+  // Click con el mouse
+  document.querySelectorAll('.key, .black-key').forEach(key => {
+    key.addEventListener('click', () => {
+      const noteId = key.getAttribute('id');
+      playNote(noteId, key);
     });
   });
+
+  // ===== Teclado físico =====
+  const keyMap = {
+    '8':'C', '7':'D', '6':'E', '5':'F',
+    '4':'G', '3':'A', '2':'B', '1':'C2',
+    'u':'C#', 'y':'D#', 't':'F#', 'r':'G#', 'e':'A#'
+  };
+
+  // Variables para salto
+  let isJumping = false;
+  let velocityY = 0;
+  const gravity = -0.02;
+  const jumpStrength = 0.5;
+  const cameraEl = document.getElementById('camera');
+
+  window.addEventListener('keydown', (e) => {
+    const noteId = keyMap[e.key];
+    if (noteId) {
+      const keyEl = document.getElementById(noteId);
+      playNote(noteId, keyEl);
+    }
+
+    // Salto con barra espaciadora
+    if (e.code === 'Space' && !isJumping) {
+      isJumping = true;
+      velocityY = jumpStrength;
+    }
+  });
+
+  // Actualización del salto
+  function updateJump() {
+    const pos = cameraEl.getAttribute('position');
+
+    if (isJumping) {
+      pos.y += velocityY;
+      velocityY += gravity;
+
+      if (pos.y <= 3) {
+        pos.y = 3;
+        isJumping = false;
+        velocityY = 0;
+      }
+
+      cameraEl.setAttribute('position', pos);
+    }
+
+    requestAnimationFrame(updateJump);
+  }
+
+  updateJump();
 </script>
 </body>
 </html>
