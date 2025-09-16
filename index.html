@@ -12,14 +12,12 @@
   <!-- Campo estrellado procedural -->
   <a-entity id="stars" star-field="count: 1500; radius: 500"></a-entity>
 
-  <!-- Cámara con cursor -->
-  <a-entity 
-    id="camera" 
-    camera 
-    wasd-controls 
-    look-controls="reverseMouseDrag: true" 
-    position="0 3 0">
-    <a-entity cursor="fuse: false; rayOrigin: mouse" raycaster="objects: .key, .black-key"></a-entity>
+  <!-- Cámara con rig para movimiento -->
+  <a-entity id="cameraRig" position="0 1.25 0"> <!-- altura sobre la plataforma -->
+    <a-entity id="camera" camera rotation="0 0 0">
+      <a-entity cursor="fuse: false; rayOrigin: mouse" 
+                raycaster="objects: .key, .black-key"></a-entity>
+    </a-entity>
   </a-entity>
 
   <!-- Plataforma -->
@@ -32,7 +30,9 @@
 
   <!-- Sistema Solar -->
   <a-entity id="orbit-center" position="0 100 -250">
-    <a-sphere radius="20" src="Texturas/sol.jpg"></a-sphere>
+    <a-sphere id="sun" radius="20" src="Texturas/sol.jpg" emissive="#ffaa00" emissiveIntensity="1"></a-sphere>
+    <a-light type="point" color="#fff8aa" intensity="5" distance="1000" position="0 0 0"></a-light>
+
     <a-sphere id="mercury" radius="4" src="Texturas/mercurio.jpg"></a-sphere>
     <a-sphere id="venus" radius="7" src="Texturas/venus.jpg"></a-sphere>
     <a-sphere id="earth" radius="9" src="Texturas/tierra.jpg"></a-sphere>
@@ -60,13 +60,13 @@
     <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="2.6 0.4 0.5"></a-box>
 
     <!-- Teclas blancas -->
-    <a-box id="C" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0 1.0 0"></a-box>
-    <a-box id="D" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.4 1.0 0"></a-box>
-    <a-box id="E" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.8 1.0 0"></a-box>
-    <a-box id="F" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="1.2 1.0 0"></a-box>
-    <a-box id="G" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="1.6 1.0 0"></a-box>
-    <a-box id="A" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.0 1.0 0"></a-box>
-    <a-box id="B" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.4 1.0 0"></a-box>
+    <a-box id="C"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.0 1.0 0"></a-box>
+    <a-box id="D"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.4 1.0 0"></a-box>
+    <a-box id="E"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.8 1.0 0"></a-box>
+    <a-box id="F"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="1.2 1.0 0"></a-box>
+    <a-box id="G"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="1.6 1.0 0"></a-box>
+    <a-box id="A"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.0 1.0 0"></a-box>
+    <a-box id="B"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.4 1.0 0"></a-box>
     <a-box id="C2" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.8 1.0 0"></a-box>
 
     <!-- Teclas negras -->
@@ -128,7 +128,6 @@
       });
       el.object3D.rotation.y+=0.01;
     });
-    // Luna
     const earthPos=earth.getAttribute('position');
     const moonAngle=t*0.2;
     moon.setAttribute('position',{
@@ -140,7 +139,7 @@
   }
   requestAnimationFrame(animatePlanets);
 
-  // ===== Piano optimizado (precarga + clonación de audio) =====
+  // ===== Piano =====
   const notes = {
     'C':'Sonidos/Do.mp3','C#':'Sonidos/Cs.mp3','D':'Sonidos/Re.mp3','D#':'Sonidos/Ds.mp3',
     'E':'Sonidos/Mi.mp3','F':'Sonidos/Fa.mp3','F#':'Sonidos/Fs.mp3','G':'Sonidos/Sol.mp3',
@@ -166,7 +165,6 @@
     }
   }
 
-  // Click con el mouse
   document.querySelectorAll('.key, .black-key').forEach(key => {
     key.addEventListener('click', () => {
       const noteId = key.getAttribute('id');
@@ -174,55 +172,113 @@
     });
   });
 
-  // ===== Teclado físico =====
   const keyMap = {
     '8':'C', '7':'D', '6':'E', '5':'F',
     '4':'G', '3':'A', '2':'B', '1':'C2',
     'u':'C#', 'y':'D#', 't':'F#', 'r':'G#', 'e':'A#'
   };
 
-  // Variables para salto
+  // ===== Movimiento WASD =====
+  const cameraRig = document.getElementById("cameraRig"); // ahora movemos el rig
   let isJumping = false;
   let velocityY = 0;
   const gravity = -0.02;
   const jumpStrength = 0.5;
-  const cameraEl = document.getElementById('camera');
+  const speed = 0.2;
+  let keysPressed = {};
 
-  window.addEventListener('keydown', (e) => {
+  window.addEventListener("keydown", e => {
+    keysPressed[e.key.toLowerCase()] = true;
     const noteId = keyMap[e.key];
     if (noteId) {
       const keyEl = document.getElementById(noteId);
       playNote(noteId, keyEl);
     }
+  });
+  window.addEventListener("keyup", e => keysPressed[e.key.toLowerCase()] = false);
 
-    // Salto con barra espaciadora
-    if (e.code === 'Space' && !isJumping) {
+  function updateMovement() {
+    let pos = cameraRig.getAttribute("position");
+    let rot = cameraRig.getAttribute("rotation") || {x:0,y:0,z:0};
+    let rad = THREE.MathUtils.degToRad(rot.y);
+
+    // vector hacia adelante y a la derecha
+    let forward = {x: -Math.sin(rad), z: -Math.cos(rad)};
+    let right   = {x: Math.cos(rad),  z: -Math.sin(rad)};
+
+    if (keysPressed["w"]) {
+      pos.x += forward.x * speed;
+      pos.z += forward.z * speed;
+    }
+    if (keysPressed["s"]) {
+      pos.x -= forward.x * speed;
+      pos.z -= forward.z * speed;
+    }
+    if (keysPressed["a"]) {
+      pos.x -= right.x * speed;
+      pos.z -= right.z * speed;
+    }
+    if (keysPressed["d"]) {
+      pos.x += right.x * speed;
+      pos.z += right.z * speed;
+    }
+
+    // salto
+    if (keysPressed[" "] && !isJumping) {
       isJumping = true;
       velocityY = jumpStrength;
     }
-  });
-
-  // Actualización del salto
-  function updateJump() {
-    const pos = cameraEl.getAttribute('position');
-
     if (isJumping) {
       pos.y += velocityY;
       velocityY += gravity;
-
-      if (pos.y <= 3) {
+      if (pos.y <= 3) { // altura inicial sobre la plataforma
         pos.y = 3;
         isJumping = false;
         velocityY = 0;
       }
-
-      cameraEl.setAttribute('position', pos);
     }
 
-    requestAnimationFrame(updateJump);
+    cameraRig.setAttribute("position", pos);
+    requestAnimationFrame(updateMovement);
   }
+  updateMovement();
 
-  updateJump();
+  // ===== Control de cámara =====
+  const scene = document.querySelector("a-scene");
+  let isGameLook = false;
+
+  window.addEventListener("keydown", e => {
+    if (e.key === "m") {
+      isGameLook = !isGameLook;
+      if (isGameLook) {
+        scene.requestPointerLock();
+      } else {
+        document.exitPointerLock();
+      }
+    }
+  });
+
+  // Arrastre tipo Google Maps
+  scene.addEventListener("mousemove", e => {
+    if (!isGameLook && e.buttons === 1) {
+      let rot = cameraRig.getAttribute("rotation");
+      rot.y -= e.movementX * 0.2;
+      rot.x -= e.movementY * 0.2;
+      rot.x = Math.max(-90, Math.min(90, rot.x));
+      cameraRig.setAttribute("rotation", rot);
+    }
+  });
+
+  // Vista tipo Minecraft
+  document.addEventListener("mousemove", e => {
+    if (isGameLook && document.pointerLockElement === scene) {
+      let rot = cameraRig.getAttribute("rotation");
+      rot.y -= e.movementX * 0.2;
+      rot.x -= e.movementY * 0.2;
+      rot.x = Math.max(-90, Math.min(90, rot.x));
+      cameraRig.setAttribute("rotation", rot);
+    }
+  });
 </script>
 </body>
 </html>
