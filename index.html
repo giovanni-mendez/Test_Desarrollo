@@ -1,289 +1,275 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <meta charset="utf-8">
-  <title>VR Sistema Solar + Piano Realista</title>
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <style>body{margin:0;}</style>
-</head>
-<body>
-<a-scene background="color: black">
-
-  <!-- Campo estrellado procedural -->
-  <a-entity id="stars" star-field="count: 1500; radius: 500"></a-entity>
-
-  <!-- Cámara con rig para movimiento -->
-  <a-entity id="cameraRig" position="0 3 0"> <!-- altura inicial sobre la plataforma -->
-    <a-entity id="camera" camera rotation="0 0 0">
-      <a-entity cursor="fuse: false; rayOrigin: mouse" 
-                raycaster="objects: .key, .black-key"></a-entity>
-    </a-entity>
-  </a-entity>
-
-  <!-- Plataforma -->
-  <a-cylinder position="0 0 0" radius="20" height="0.5" color="#444"></a-cylinder>
-  <a-cylinder position="0 2 0" radius="20" height="4" color="#000" opacity="0"></a-cylinder>
-
-  <!-- Luces -->
-  <a-light type="ambient" color="#fff" intensity="0.5"></a-light>
-  <a-light type="point" color="#fff" intensity="2" position="0 80 0"></a-light>
-
-  <!-- Sistema Solar -->
-  <a-entity id="orbit-center" position="0 100 -250">
-    <a-sphere id="sun" radius="20" src="Texturas/sol.jpg" emissive="#ffaa00" emissiveIntensity="1"></a-sphere>
-    <a-light type="point" color="#fff8aa" intensity="5" distance="1000" position="0 0 0"></a-light>
-
-    <a-sphere id="mercury" radius="4" src="Texturas/mercurio.jpg"></a-sphere>
-    <a-sphere id="venus" radius="7" src="Texturas/venus.jpg"></a-sphere>
-    <a-sphere id="earth" radius="9" src="Texturas/tierra.jpg"></a-sphere>
-    <a-sphere id="moon" radius="2.5" src="Texturas/luna.jpg"></a-sphere>
-    <a-sphere id="mars" radius="6" src="Texturas/marte.jpg"></a-sphere>
-    <a-sphere id="jupiter" radius="20" src="Texturas/jupiter.jpg"></a-sphere>
-    <a-entity id="saturn-group">
-      <a-sphere radius="18" src="Texturas/saturno.jpg"></a-sphere>
-      <a-ring radius-inner="20" radius-outer="28" rotation="-90 0 0" color="#DDCCAA"></a-ring>
-    </a-entity>
-    <a-sphere id="uranus" radius="14" src="Texturas/urano.jpg"></a-sphere>
-    <a-sphere id="neptune" radius="14" src="Texturas/neptuno.jpg"></a-sphere>
-  </a-entity>
-
-  <!-- Piano -->
-  <a-entity id="piano" position="1.5 1.0 -2.5" rotation="0 180 0">
-    <!-- Cuerpo -->
-    <a-box width="3.5" height="0.4" depth="1.2" color="#222" position="1.4 0.8 0"></a-box>
-    <!-- Patas -->
-    <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="0.2 0.4 -0.5"></a-box>
-    <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="2.6 0.4 -0.5"></a-box>
-    <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="0.2 0.4 0.5"></a-box>
-    <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="2.6 0.4 0.5"></a-box>
-    <!-- Teclas blancas -->
-    <a-box id="C"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.0 1.0 0"></a-box>
-    <a-box id="D"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.4 1.0 0"></a-box>
-    <a-box id="E"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.8 1.0 0"></a-box>
-    <a-box id="F"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="1.2 1.0 0"></a-box>
-    <a-box id="G"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="1.6 1.0 0"></a-box>
-    <a-box id="A"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.0 1.0 0"></a-box>
-    <a-box id="B"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.4 1.0 0"></a-box>
-    <a-box id="C2" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.8 1.0 0"></a-box>
-    <!-- Teclas negras -->
-    <a-box id="C#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="0.2 1.05 0.2"></a-box>
-    <a-box id="D#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="0.6 1.05 0.2"></a-box>
-    <a-box id="F#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="1.4 1.05 0.2"></a-box>
-    <a-box id="G#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="1.8 1.05 0.2"></a-box>
-    <a-box id="A#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="2.2 1.05 0.2"></a-box>
-  </a-entity>
-
-</a-scene>
-
-<script>
-  // ===== Campo estrellado =====
-  AFRAME.registerComponent('star-field', {
-    schema: { count: {type:'int', default:1000}, radius:{type:'number', default:300} },
-    init: function () {
-      for (let i=0;i<this.data.count;i++){
-        const theta=Math.random()*2*Math.PI;
-        const phi=Math.acos(2*Math.random()-1);
-        const r=this.data.radius;
-        const x=r*Math.sin(phi)*Math.cos(theta);
-        const y=r*Math.sin(phi)*Math.sin(theta);
-        const z=r*Math.cos(phi);
-        const star=document.createElement('a-sphere');
-        star.setAttribute('position',{x,y,z});
-        star.setAttribute('radius',0.5);
-        star.setAttribute('color','white');
-        star.setAttribute('material',{shader:'flat'});
-        this.el.appendChild(star);
-      }
-    }
-  });
-
-  // ===== Órbitas =====
-  const planets = [
-    {el:'#mercury', radius:40, speed:0.08, offset:Math.random()*Math.PI*2},
-    {el:'#venus', radius:70, speed:0.06, offset:Math.random()*Math.PI*2},
-    {el:'#earth', radius:110, speed:0.05, offset:Math.random()*Math.PI*2},
-    {el:'#mars', radius:150, speed:0.04, offset:Math.random()*Math.PI*2},
-    {el:'#jupiter', radius:220, speed:0.03, offset:Math.random()*Math.PI*2},
-    {el:'#saturn-group', radius:300, speed:0.025, offset:Math.random()*Math.PI*2},
-    {el:'#uranus', radius:380, speed:0.02, offset:Math.random()*Math.PI*2},
-    {el:'#neptune', radius:460, speed:0.015, offset:Math.random()*Math.PI*2}
-  ];
-  const moon=document.querySelector('#moon');
-  const earth=document.querySelector('#earth');
-
-  function animatePlanets(time){
-    const t=time*0.001;
-    planets.forEach(p=>{
-      const angle=t*p.speed + p.offset;
-      const el=document.querySelector(p.el);
-      el.setAttribute('position',{
-        x:p.radius*Math.cos(angle),
-        y:0,
-        z:p.radius*Math.sin(angle)
-      });
-      el.object3D.rotation.y+=0.01;
-    });
-    const earthPos=earth.getAttribute('position');
-    const moonAngle=t*0.2;
-    moon.setAttribute('position',{
-      x:earthPos.x+15*Math.cos(moonAngle),
-      y:0,
-      z:earthPos.z+15*Math.sin(moonAngle)
-    });
-    requestAnimationFrame(animatePlanets);
-  }
-  requestAnimationFrame(animatePlanets);
-
-  // ===== Piano =====
-  const notes = {
-    'C':'Sonidos/Do.mp3','C#':'Sonidos/Cs.mp3','D':'Sonidos/Re.mp3','D#':'Sonidos/Ds.mp3',
-    'E':'Sonidos/Mi.mp3','F':'Sonidos/Fa.mp3','F#':'Sonidos/Fs.mp3','G':'Sonidos/Sol.mp3',
-    'G#':'Sonidos/Gs.mp3','A':'Sonidos/La.mp3','A#':'Sonidos/As.mp3','B':'Sonidos/Si.mp3','C2':'Sonidos/C2.mp3'
-  };
-
-  const audioCache = {};
-  for (let key in notes) {
-    const audio = new Audio(notes[key]);
-    audio.preload = "auto";
-    audioCache[key] = audio;
-  }
-
-  function playNote(noteId, keyEl) {
-    if (audioCache[noteId]) {
-      const clone = audioCache[noteId].cloneNode();
-      clone.play().catch(e => console.log(e));
-      if (keyEl) {
-        const originalColor = keyEl.getAttribute('color');
-        keyEl.setAttribute('color', '#f00');
-        setTimeout(() => keyEl.setAttribute('color', originalColor), 150);
-      }
-    }
-  }
-
-  document.querySelectorAll('.key, .black-key').forEach(key => {
-    key.addEventListener('click', () => {
-      const noteId = key.getAttribute('id');
-      playNote(noteId, key);
-    });
-  });
-
-  const keyMap = {
-    '8':'C', '7':'D', '6':'E', '5':'F',
-    '4':'G', '3':'A', '2':'B', '1':'C2',
-    'u':'C#', 'y':'D#', 't':'F#', 'r':'G#', 'e':'A#'
-  };
-
-  // ===== Movimiento WASD con salto =====
-  const cameraRig = document.getElementById("cameraRig");
-  let isJumping = false;
-  let velocityY = 0;
-  const gravity = -0.02;
-  const jumpStrength = 0.5;
-  const speed = 0.2;
-  let keysPressed = {};
-  let gameStarted = false; // <<< bandera para activar movimiento/salto
-
-  window.addEventListener("keydown", e => {
-    keysPressed[e.key.toLowerCase()] = true;
-
-    if (!gameStarted) {
-      gameStarted = true; // el juego arranca al tocar la primera tecla
-    }
-
-    const noteId = keyMap[e.key];
-    if (noteId) {
-      const keyEl = document.getElementById(noteId);
-      playNote(noteId, keyEl);
-    }
-  });
-
-  window.addEventListener("keyup", e => keysPressed[e.key.toLowerCase()] = false);
-
-  function updateMovement() {
-    let pos = cameraRig.getAttribute("position");
-    let rot = cameraRig.getAttribute("rotation") || {x:0,y:0,z:0};
-    let rad = THREE.MathUtils.degToRad(rot.y);
-
-    if (gameStarted) {
-      // vector hacia adelante y a la derecha
-      let forward = {x: -Math.sin(rad), z: -Math.cos(rad)};
-      let right   = {x: Math.cos(rad),  z: -Math.sin(rad)};
-
-      if (keysPressed["w"]) {
-        pos.x += forward.x * speed;
-        pos.z += forward.z * speed;
-      }
-      if (keysPressed["s"]) {
-        pos.x -= forward.x * speed;
-        pos.z -= forward.z * speed;
-      }
-      if (keysPressed["a"]) {
-        pos.x -= right.x * speed;
-        pos.z -= right.z * speed;
-      }
-      if (keysPressed["d"]) {
-        pos.x += right.x * speed;
-        pos.z += right.z * speed;
-      }
-
-      // salto
-      if (keysPressed[" "] && !isJumping) {
-        isJumping = true;
-        velocityY = jumpStrength;
-      }
-      if (isJumping) {
-        pos.y += velocityY;
-        velocityY += gravity;
-        if (pos.y <= 3) { // altura mínima sobre plataforma
-          pos.y = 3;
-          isJumping = false;
-          velocityY = 0;
+    <meta charset="utf-8">
+    <title>VR Sistema Solar + Piano Realista</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <style>
+        body {
+            margin: 0;
         }
-      }
-    } else {
-      // antes de arrancar el juego mantenemos la altura inicial
-      pos.y = 3;
-    }
+    </style>
+</head>
 
-    cameraRig.setAttribute("position", pos);
-    requestAnimationFrame(updateMovement);
-  }
-  updateMovement();
+<body>
+    <a-scene background="color: black">
 
-  // ===== Control de cámara =====
-  const scene = document.querySelector("a-scene");
-  let isGameLook = false;
+        <!-- Galaxia procedural -->
+        <a-entity id="galaxy" galaxy="stars:3000; radius:1200;"></a-entity>
 
-  window.addEventListener("keydown", e => {
-    if (e.key === "m") {
-      isGameLook = !isGameLook;
-      if (isGameLook) {
-        scene.requestPointerLock();
-      } else {
-        document.exitPointerLock();
-      }
-    }
-  });
+        <!-- Campo estrellado procedural -->
+        <a-entity id="stars" star-field="count: 1500; radius: 500"></a-entity>
 
-  scene.addEventListener("mousemove", e => {
-    if (!isGameLook && e.buttons === 1) {
-      let rot = cameraRig.getAttribute("rotation");
-      rot.y -= e.movementX * 0.2;
-      rot.x -= e.movementY * 0.2;
-      rot.x = Math.max(-90, Math.min(90, rot.x));
-      cameraRig.setAttribute("rotation", rot);
-    }
-  });
+        <!-- Cámara con rig para movimiento -->
+        <a-entity id="cameraRig" position="0 3 0">
+            <a-entity id="camera" camera rotation="0 0 0">
+                <a-entity cursor="fuse: false; rayOrigin: mouse" raycaster="objects: .key, .black-key"></a-entity>
+            </a-entity>
+        </a-entity>
 
-  document.addEventListener("mousemove", e => {
-    if (isGameLook && document.pointerLockElement === scene) {
-      let rot = cameraRig.getAttribute("rotation");
-      rot.y -= e.movementX * 0.2;
-      rot.x -= e.movementY * 0.2;
-      rot.x = Math.max(-90, Math.min(90, rot.x));
-      cameraRig.setAttribute("rotation", rot);
-    }
-  });
-</script>
+        <!-- Plataforma -->
+        <a-cylinder position="0 0 0" radius="20" height="0.5" color="#444"></a-cylinder>
+        <a-cylinder position="0 2 0" radius="20" height="4" color="#000" opacity="0"></a-cylinder>
+
+        <!-- Luces -->
+        <a-light type="ambient" color="#fff" intensity="0.5"></a-light>
+        <a-light type="point" color="#fff" intensity="2" position="0 80 0"></a-light>
+
+        <!-- Sistema Solar -->
+        <a-entity id="orbit-center" position="0 100 -250">
+            <a-sphere id="sun" radius="20" src="Texturas/sol.jpg" emissive="#ffaa00" emissiveIntensity="1"></a-sphere>
+            <a-light type="point" color="#fff8aa" intensity="5" distance="1000" position="0 0 0"></a-light>
+
+            <a-sphere id="mercury" radius="4" src="Texturas/mercurio.jpg"></a-sphere>
+            <a-sphere id="venus" radius="7" src="Texturas/venus.jpg"></a-sphere>
+            <a-sphere id="earth" radius="9" src="Texturas/tierra.jpg"></a-sphere>
+            <a-sphere id="moon" radius="2.5" src="Texturas/luna.jpg"></a-sphere>
+            <a-sphere id="mars" radius="6" src="Texturas/marte.jpg"></a-sphere>
+            <a-sphere id="jupiter" radius="20" src="Texturas/jupiter.jpg"></a-sphere>
+            <a-entity id="saturn-group">
+                <a-sphere radius="18" src="Texturas/saturno.jpg"></a-sphere>
+                <a-ring radius-inner="20" radius-outer="28" rotation="-90 0 0" color="#DDCCAA"></a-ring>
+            </a-entity>
+            <a-sphere id="uranus" radius="14" src="Texturas/urano.jpg"></a-sphere>
+            <a-sphere id="neptune" radius="14" src="Texturas/neptuno.jpg"></a-sphere>
+        </a-entity>
+
+        <!-- Piano -->
+        <a-entity id="piano" position="1.5 1.0 -2.5" rotation="0 180 0">
+            <!-- Cuerpo y patas -->
+            <a-box width="3.5" height="0.4" depth="1.2" color="#222" position="1.4 0.8 0"></a-box>
+            <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="0.2 0.4 -0.5"></a-box>
+            <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="2.6 0.4 -0.5"></a-box>
+            <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="0.2 0.4 0.5"></a-box>
+            <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="2.6 0.4 0.5"></a-box>
+            <!-- Teclas blancas -->
+            <a-box id="C" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.0 1.0 0"></a-box>
+            <a-box id="D" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.4 1.0 0"></a-box>
+            <a-box id="E" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.8 1.0 0"></a-box>
+            <a-box id="F" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="1.2 1.0 0"></a-box>
+            <a-box id="G" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="1.6 1.0 0"></a-box>
+            <a-box id="A" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.0 1.0 0"></a-box>
+            <a-box id="B" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.4 1.0 0"></a-box>
+            <a-box id="C2" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.8 1.0 0"></a-box>
+            <!-- Teclas negras -->
+            <a-box id="C#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000"
+                position="0.2 1.05 0.2"></a-box>
+            <a-box id="D#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000"
+                position="0.6 1.05 0.2"></a-box>
+            <a-box id="F#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000"
+                position="1.4 1.05 0.2"></a-box>
+            <a-box id="G#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000"
+                position="1.8 1.05 0.2"></a-box>
+            <a-box id="A#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000"
+                position="2.2 1.05 0.2"></a-box>
+        </a-entity>
+
+    </a-scene>
+
+    <script>
+        // ===== Campo estrellado =====
+        AFRAME.registerComponent('star-field', {
+            schema: { count: { type: 'int', default: 1000 }, radius: { type: 'number', default: 300 } },
+            init: function () {
+                this.stars = [];
+                for (let i = 0; i < this.data.count; i++) {
+                    const theta = Math.random() * 2 * Math.PI;
+                    const phi = Math.acos(2 * Math.random() - 1);
+                    const r = this.data.radius;
+                    const x = r * Math.sin(phi) * Math.cos(theta);
+                    const y = r * Math.sin(phi) * Math.sin(theta);
+                    const z = r * Math.cos(phi);
+                    const star = document.createElement('a-sphere');
+                    star.setAttribute('position', { x, y, z });
+                    star.setAttribute('radius', 0.9);
+                    star.setAttribute('color', 'white');
+                    star.setAttribute('material', { shader: 'flat', opacity: 1 });
+                    this.el.appendChild(star);
+
+                    this.stars.push({
+                        el: star,
+                        speed: 0.002 + Math.random() * 0.003,
+                        phase: Math.random() * Math.PI * 2
+                    });
+                }
+            },
+            tick: function (time) {
+                this.stars.forEach(s => {
+                    const opacity = 0.6 + 0.4 * Math.sin(time * s.speed + s.phase);
+                    s.el.setAttribute('material', 'opacity', opacity);
+                });
+            }
+        });
+
+        // ===== Galaxia procedural =====
+        AFRAME.registerComponent('galaxy', {
+            schema: { stars: { type: 'int', default: 2000 }, radius: { type: 'number', default: 1000 } },
+            init: function () {
+                for (let i = 0; i < this.data.stars; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = Math.sqrt(Math.random()) * this.data.radius;
+                    const height = (Math.random() - 0.5) * 100; // espesor de la galaxia
+                    const x = dist * Math.cos(angle);
+                    const y = height;
+                    const z = dist * Math.sin(angle);
+
+                    const star = document.createElement('a-sphere');
+                    star.setAttribute('position', { x, y, z });
+                    star.setAttribute('radius', 0.5);
+                    star.setAttribute('color', '#ffffff');
+                    star.setAttribute('material', { shader: 'flat', opacity: 0.7 });
+                    this.el.appendChild(star);
+                }
+            }
+        });
+
+        // ===== Órbitas de planetas =====
+        const planets = [
+            { el: '#mercury', radius: 40, speed: 0.08, offset: Math.random() * Math.PI * 2 },
+            { el: '#venus', radius: 70, speed: 0.06, offset: Math.random() * Math.PI * 2 },
+            { el: '#earth', radius: 110, speed: 0.05, offset: Math.random() * Math.PI * 2 },
+            { el: '#mars', radius: 150, speed: 0.04, offset: Math.random() * Math.PI * 2 },
+            { el: '#jupiter', radius: 220, speed: 0.03, offset: Math.random() * Math.PI * 2 },
+            { el: '#saturn-group', radius: 300, speed: 0.025, offset: Math.random() * Math.PI * 2 },
+            { el: '#uranus', radius: 380, speed: 0.02, offset: Math.random() * Math.PI * 2 },
+            { el: '#neptune', radius: 460, speed: 0.015, offset: Math.random() * Math.PI * 2 }
+        ];
+        const moon = document.querySelector('#moon');
+        const earth = document.querySelector('#earth');
+
+        function animatePlanets(time) {
+            const t = time * 0.001;
+            planets.forEach(p => {
+                const angle = t * p.speed + p.offset;
+                const el = document.querySelector(p.el);
+                el.setAttribute('position', {
+                    x: p.radius * Math.cos(angle),
+                    y: 0,
+                    z: p.radius * Math.sin(angle)
+                });
+                el.object3D.rotation.y += 0.01;
+            });
+            const earthPos = earth.getAttribute('position');
+            const moonAngle = t * 0.2;
+            moon.setAttribute('position', {
+                x: earthPos.x + 15 * Math.cos(moonAngle),
+                y: 0,
+                z: earthPos.z + 15 * Math.sin(moonAngle)
+            });
+            requestAnimationFrame(animatePlanets);
+        }
+        requestAnimationFrame(animatePlanets);
+
+        // ===== Piano y movimiento WASD =====
+        const notes = {
+            'C': 'Sonidos/Do.mp3', 'C#': 'Sonidos/Cs.mp3', 'D': 'Sonidos/Re.mp3', 'D#': 'Sonidos/Ds.mp3',
+            'E': 'Sonidos/Mi.mp3', 'F': 'Sonidos/Fa.mp3', 'F#': 'Sonidos/Fs.mp3', 'G': 'Sonidos/Sol.mp3',
+            'G#': 'Sonidos/Gs.mp3', 'A': 'Sonidos/La.mp3', 'A#': 'Sonidos/As.mp3', 'B': 'Sonidos/Si.mp3', 'C2': 'Sonidos/C2.mp3'
+        };
+        const audioCache = {};
+        for (let key in notes) { const audio = new Audio(notes[key]); audio.preload = "auto"; audioCache[key] = audio; }
+
+        function playNote(noteId, keyEl) {
+            if (audioCache[noteId]) {
+                const clone = audioCache[noteId].cloneNode();
+                clone.play().catch(e => console.log(e));
+                if (keyEl) {
+                    const originalColor = keyEl.getAttribute('color');
+                    keyEl.setAttribute('color', '#f00');
+                    setTimeout(() => keyEl.setAttribute('color', originalColor), 150);
+                }
+            }
+        }
+
+        document.querySelectorAll('.key, .black-key').forEach(key => {
+            key.addEventListener('click', () => { playNote(key.getAttribute('id'), key); });
+        });
+
+        const keyMap = { '8': 'C', '7': 'D', '6': 'E', '5': 'F', '4': 'G', '3': 'A', '2': 'B', '1': 'C2', 'u': 'C#', 'y': 'D#', 't': 'F#', 'r': 'G#', 'e': 'A#' };
+
+        // Movimiento WASD con salto
+        const cameraRigEl = document.getElementById("cameraRig");
+        let isJumping = false, velocityY = 0;
+        const gravity = -0.03, jumpStrength = 0.5, speed = 0.5;
+        let keysPressed = {}, gameStarted = false;
+
+        window.addEventListener("keydown", e => {
+            keysPressed[e.key.toLowerCase()] = true;
+            if (!gameStarted) gameStarted = true;
+            const noteId = keyMap[e.key];
+            if (noteId) playNote(noteId, document.getElementById(noteId));
+        });
+        window.addEventListener("keyup", e => keysPressed[e.key.toLowerCase()] = false);
+
+        function updateMovement() {
+            let pos = cameraRigEl.getAttribute("position");
+            let rot = cameraRigEl.getAttribute("rotation") || { x: 0, y: 0, z: 0 };
+            let rad = THREE.MathUtils.degToRad(rot.y);
+            if (gameStarted) {
+                const forward = { x: -Math.sin(rad), z: -Math.cos(rad) };
+                const right = { x: Math.cos(rad), z: -Math.sin(rad) };
+                if (keysPressed["w"]) { pos.x += forward.x * speed; pos.z += forward.z * speed; }
+                if (keysPressed["s"]) { pos.x -= forward.x * speed; pos.z -= forward.z * speed; }
+                if (keysPressed["a"]) { pos.x -= right.x * speed; pos.z -= right.z * speed; }
+                if (keysPressed["d"]) { pos.x += right.x * speed; pos.z += right.z * speed; }
+                if (keysPressed[" "] && !isJumping) { isJumping = true; velocityY = jumpStrength; }
+                if (isJumping) { pos.y += velocityY; velocityY += gravity; if (pos.y <= 3) { pos.y = 3; isJumping = false; velocityY = 0; } }
+            } else { pos.y = 3; }
+            cameraRigEl.setAttribute("position", pos);
+            requestAnimationFrame(updateMovement);
+        }
+        updateMovement();
+
+        // Control de cámara
+        const scene = document.querySelector("a-scene");
+        let isGameLook = false;
+        window.addEventListener("keydown", e => {
+            if (e.key === "m") {
+                isGameLook = !isGameLook;
+                if (isGameLook) scene.requestPointerLock();
+                else document.exitPointerLock();
+            }
+        });
+        scene.addEventListener("mousemove", e => {
+            if (!isGameLook && e.buttons === 1) {
+                let rot = cameraRigEl.getAttribute("rotation");
+                rot.y -= e.movementX * 0.2;
+                rot.x -= e.movementY * 0.2;
+                rot.x = Math.max(-90, Math.min(90, rot.x));
+                cameraRigEl.setAttribute("rotation", rot);
+            }
+        });
+        document.addEventListener("mousemove", e => {
+            if (isGameLook && document.pointerLockElement === scene) {
+                let rot = cameraRigEl.getAttribute("rotation");
+                rot.y -= e.movementX * 0.2;
+                rot.x -= e.movementY * 0.2;
+                rot.x = Math.max(-90, Math.min(90, rot.x));
+                cameraRigEl.setAttribute("rotation", rot);
+            }
+        });
+    </script>
 </body>
+
 </html>
