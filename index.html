@@ -13,7 +13,7 @@
   <a-entity id="stars" star-field="count: 1500; radius: 500"></a-entity>
 
   <!-- Cámara con rig para movimiento -->
-  <a-entity id="cameraRig" position="0 1.25 0"> <!-- altura sobre la plataforma -->
+  <a-entity id="cameraRig" position="0 3 0"> <!-- altura inicial sobre la plataforma -->
     <a-entity id="camera" camera rotation="0 0 0">
       <a-entity cursor="fuse: false; rayOrigin: mouse" 
                 raycaster="objects: .key, .black-key"></a-entity>
@@ -49,16 +49,13 @@
 
   <!-- Piano -->
   <a-entity id="piano" position="1.5 1.0 -2.5" rotation="0 180 0">
-
     <!-- Cuerpo -->
     <a-box width="3.5" height="0.4" depth="1.2" color="#222" position="1.4 0.8 0"></a-box>
-
     <!-- Patas -->
     <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="0.2 0.4 -0.5"></a-box>
     <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="2.6 0.4 -0.5"></a-box>
     <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="0.2 0.4 0.5"></a-box>
     <a-box width="0.1" height="0.8" depth="0.1" color="#333" position="2.6 0.4 0.5"></a-box>
-
     <!-- Teclas blancas -->
     <a-box id="C"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.0 1.0 0"></a-box>
     <a-box id="D"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="0.4 1.0 0"></a-box>
@@ -68,14 +65,12 @@
     <a-box id="A"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.0 1.0 0"></a-box>
     <a-box id="B"  class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.4 1.0 0"></a-box>
     <a-box id="C2" class="key" width="0.35" height="0.1" depth="1" color="#fff" position="2.8 1.0 0"></a-box>
-
     <!-- Teclas negras -->
     <a-box id="C#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="0.2 1.05 0.2"></a-box>
     <a-box id="D#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="0.6 1.05 0.2"></a-box>
     <a-box id="F#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="1.4 1.05 0.2"></a-box>
     <a-box id="G#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="1.8 1.05 0.2"></a-box>
     <a-box id="A#" class="black-key" width="0.2" height="0.12" depth="0.6" color="#000" position="2.2 1.05 0.2"></a-box>
-
   </a-entity>
 
 </a-scene>
@@ -178,23 +173,30 @@
     'u':'C#', 'y':'D#', 't':'F#', 'r':'G#', 'e':'A#'
   };
 
-  // ===== Movimiento WASD =====
-  const cameraRig = document.getElementById("cameraRig"); // ahora movemos el rig
+  // ===== Movimiento WASD con salto =====
+  const cameraRig = document.getElementById("cameraRig");
   let isJumping = false;
   let velocityY = 0;
   const gravity = -0.02;
   const jumpStrength = 0.5;
   const speed = 0.2;
   let keysPressed = {};
+  let gameStarted = false; // <<< bandera para activar movimiento/salto
 
   window.addEventListener("keydown", e => {
     keysPressed[e.key.toLowerCase()] = true;
+
+    if (!gameStarted) {
+      gameStarted = true; // el juego arranca al tocar la primera tecla
+    }
+
     const noteId = keyMap[e.key];
     if (noteId) {
       const keyEl = document.getElementById(noteId);
       playNote(noteId, keyEl);
     }
   });
+
   window.addEventListener("keyup", e => keysPressed[e.key.toLowerCase()] = false);
 
   function updateMovement() {
@@ -202,40 +204,45 @@
     let rot = cameraRig.getAttribute("rotation") || {x:0,y:0,z:0};
     let rad = THREE.MathUtils.degToRad(rot.y);
 
-    // vector hacia adelante y a la derecha
-    let forward = {x: -Math.sin(rad), z: -Math.cos(rad)};
-    let right   = {x: Math.cos(rad),  z: -Math.sin(rad)};
+    if (gameStarted) {
+      // vector hacia adelante y a la derecha
+      let forward = {x: -Math.sin(rad), z: -Math.cos(rad)};
+      let right   = {x: Math.cos(rad),  z: -Math.sin(rad)};
 
-    if (keysPressed["w"]) {
-      pos.x += forward.x * speed;
-      pos.z += forward.z * speed;
-    }
-    if (keysPressed["s"]) {
-      pos.x -= forward.x * speed;
-      pos.z -= forward.z * speed;
-    }
-    if (keysPressed["a"]) {
-      pos.x -= right.x * speed;
-      pos.z -= right.z * speed;
-    }
-    if (keysPressed["d"]) {
-      pos.x += right.x * speed;
-      pos.z += right.z * speed;
-    }
-
-    // salto
-    if (keysPressed[" "] && !isJumping) {
-      isJumping = true;
-      velocityY = jumpStrength;
-    }
-    if (isJumping) {
-      pos.y += velocityY;
-      velocityY += gravity;
-      if (pos.y <= 3) { // altura inicial sobre la plataforma
-        pos.y = 3;
-        isJumping = false;
-        velocityY = 0;
+      if (keysPressed["w"]) {
+        pos.x += forward.x * speed;
+        pos.z += forward.z * speed;
       }
+      if (keysPressed["s"]) {
+        pos.x -= forward.x * speed;
+        pos.z -= forward.z * speed;
+      }
+      if (keysPressed["a"]) {
+        pos.x -= right.x * speed;
+        pos.z -= right.z * speed;
+      }
+      if (keysPressed["d"]) {
+        pos.x += right.x * speed;
+        pos.z += right.z * speed;
+      }
+
+      // salto
+      if (keysPressed[" "] && !isJumping) {
+        isJumping = true;
+        velocityY = jumpStrength;
+      }
+      if (isJumping) {
+        pos.y += velocityY;
+        velocityY += gravity;
+        if (pos.y <= 3) { // altura mínima sobre plataforma
+          pos.y = 3;
+          isJumping = false;
+          velocityY = 0;
+        }
+      }
+    } else {
+      // antes de arrancar el juego mantenemos la altura inicial
+      pos.y = 3;
     }
 
     cameraRig.setAttribute("position", pos);
@@ -258,7 +265,6 @@
     }
   });
 
-  // Arrastre tipo Google Maps
   scene.addEventListener("mousemove", e => {
     if (!isGameLook && e.buttons === 1) {
       let rot = cameraRig.getAttribute("rotation");
@@ -269,7 +275,6 @@
     }
   });
 
-  // Vista tipo Minecraft
   document.addEventListener("mousemove", e => {
     if (isGameLook && document.pointerLockElement === scene) {
       let rot = cameraRig.getAttribute("rotation");
